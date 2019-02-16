@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +28,16 @@ public class Umwizera {
     private String motherName;
     private String phoneNumber;
     private String email;
+    private long nationalId;
+
+    @Temporal(TemporalType.DATE)
+    private Date dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @Transient
+    private int age;
 
     @Embedded
     private Location residence;
@@ -44,4 +55,13 @@ public class Umwizera {
     @OneToMany(mappedBy = "umwizera",cascade = CascadeType.ALL)
     private Set<Umwizera_In> umwizeraIns = new HashSet<>();
 
+
+    public int getAge() {
+        int age=0;
+        if (dateOfBirth != null) {
+            LocalDate dob = dateOfBirth.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            age = Period.between(dob, LocalDate.now()).getYears();
+        }
+        return age;
+    }
 }

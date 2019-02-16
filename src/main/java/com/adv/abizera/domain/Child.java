@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +27,19 @@ public class Child {
 
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-    private long nid;
+    private long nationalId;
+    private int age;
 
     @OneToMany(mappedBy = "child",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Umwizera_Child> umwizeraChildren = new HashSet<>();
+
+    public int getAge() {
+        int age=0;
+        if (dateOfBirth != null) {
+            LocalDate dob = dateOfBirth.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            age = Period.between(dob, LocalDate.now()).getYears();
+        }
+        return age;
+    }
+
 }
